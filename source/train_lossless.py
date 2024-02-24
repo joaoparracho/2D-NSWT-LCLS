@@ -95,25 +95,18 @@ def main():
     print(only_train_entropy_model)
     
     writer = SummaryWriter("runs/"+args.model_dir.split("/")[-2])
-    
-    seed=0
-    torch.manual_seed(seed)
-    random.seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    np.random.seed(seed)
-   
+
     is_train=True
     model = Model(args.decomp_levels,args.alpha,args.trainAlpha,args.lifting_struct,args.non_linear_arch,args.wavelet,is_train,args.only_train_entropy_model,args.nec,)
                  
-    # if len(args.alpha_array)>0:
-    #     for i in range(len(model.wavelet_transform)):
-    #         j=0
-    #         print(str(i+1)+" Level of decomposition")
-    #         for name, layer in model.wavelet_transform[i].lifting.named_modules(): 
-    #             if name.__contains__("residual") and not name.__contains__("."): 
-    #                 layer.alpha = torch.nn.Parameter(torch.Tensor([float(args.alpha_array[i*4+j])]),requires_grad=False)
-    #                 j+=1
+    if len(args.alpha_array)>0:
+        for i in range(len(model.wavelet_transform)):
+            j=0
+            print(str(i+1)+" Level of decomposition")
+            for name, layer in model.wavelet_transform[i].lifting.named_modules(): 
+                if name.__contains__("residual") and not name.__contains__("."): 
+                    layer.alpha = torch.nn.Parameter(torch.Tensor([float(args.alpha_array[i*4+j])]),requires_grad=False)
+                    j+=1
 
     epoch = 1
     if args.load_model is not None:
@@ -304,6 +297,8 @@ def main():
         if epoch % 50 == 0:
             torch.save({'epoch': epoch, 'state_dict': model.state_dict()}, ckpt_dir + '/model_epoch' + str(epoch).zfill(3) + '.pth', _use_new_zipfile_serialization=False)
 
+        
+        
         
         logfile.write('bpp_mean: ' + str(bpp_all / max_step) + '\n')
         logfile.flush()
