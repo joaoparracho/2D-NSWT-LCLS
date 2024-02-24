@@ -248,7 +248,7 @@ def dec_lossless(args, bin_name, dec, freqs_resolution, logfile):
             
             print('HH' + str(j) + ' decoded')
             
-            LL = models_dict['transform'].inverse_trans(LL, HL_list[j], LH_list[j], HH_list[j], j)
+            LL = models_dict['transform'].inverse_trans(LL, LH_list[j], HL_list[j], HH_list[j], j)
 
         assert (coded_coe_num == (height + pad_h) * (width + pad_w) * 3)
 
